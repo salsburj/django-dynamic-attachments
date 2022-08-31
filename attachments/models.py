@@ -346,7 +346,9 @@ class Upload (models.Model):
                     data[key[len(prefix):]] = request.POST.getlist(key)
         return data
 
-    def upload_file(self, f, file_path=None):
+    def upload_file(self, f, file_path=None, request=None):
+        if request and hasattr(request, 'graylog'):
+            request.graylog.info('inside of upoad_file')
         mode = 'ab'
         if file_path:
             mode = 'wb'
@@ -363,7 +365,9 @@ class Upload (models.Model):
                     current_chunk = attachment_chunk
                     current_idx = idx
                 fp.write(current_chunk)
-        except OperationalError:
-             self.chunk_index_to_resume_on = current_idx + 1
+        except Exception as e:
+            if request and hasattr(request, 'graylog'):
+                request.graylog.info(f'inside of upoad_file and encountered an exception: {e}')
+            self.chunk_index_to_resume_on = current_idx + 1
         finally:
-             self.save()
+            self.save()

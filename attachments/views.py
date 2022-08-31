@@ -47,7 +47,7 @@ def attach(request, session_id):
             file_path = None
             if created:
                 _, file_path = tempfile.mkstemp(dir=temp_dir)
-            upload.upload_file(f=f, file_path=file_path)
+            upload.upload_file(f=f, file_path=file_path, request=request)
 
             # Set the desired permissions based on Django's FILE_UPLOAD_PERMISSIONS setting
             if settings.FILE_UPLOAD_PERMISSIONS:
